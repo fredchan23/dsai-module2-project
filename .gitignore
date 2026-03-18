@@ -1,0 +1,8 @@
+olist/seeds/
+rsa_key.p8
+rsa_key.pub
+olist/.user.yml
+olist/image.png
+olist/dbt_project.yml
+olist/models/dim/schema.yml
+olist/dataset-info.md

@@ -33,3 +33,90 @@ models:
   olist:
     src:
       +materialized: view
+    dim:
+      +materialized: table
+    fct:
+      +materialized: table
+
+seeds:
+  olist:
+    +quote_columns: false
+
+    olist_customers_dataset:
+      +column_types:
+        customer_id: varchar(32)
+        customer_unique_id: varchar(32)
+        customer_zip_code_prefix: varchar(5)
+        customer_city: varchar
+        customer_state: varchar(2)
+
+    olist_geolocation_dataset:
+      +column_types:
+        geolocation_zip_code_prefix: varchar(5)
+        geolocation_lat: number(10,6)
+        geolocation_lng: number(10,6)
+        geolocation_city: varchar
+        geolocation_state: varchar(2)
+
+    olist_order_items_dataset:
+      +column_types:
+        order_id: varchar(32)
+        order_item_id: number(10,0)
+        product_id: varchar(32)
+        seller_id: varchar(32)
+        shipping_limit_date: timestamp_ntz
+        price: number(10,2)
+        freight_value: number(10,2)
+
+    olist_order_payments_dataset:
+      +column_types:
+        order_id: varchar(32)
+        payment_sequential: number(10,0)
+        payment_type: varchar
+        payment_installments: number(10,0)
+        payment_value: number(10,2)
+
+    olist_order_reviews_dataset:
+      +column_types:
+        review_id: varchar(32)
+        order_id: varchar(32)
+        review_score: number(2,0)
+        review_comment_title: varchar
+        review_comment_message: varchar
+        review_creation_date: timestamp_ntz
+        review_answer_timestamp: timestamp_ntz
+
+    olist_orders_dataset:
+      +column_types:
+        order_id: varchar(32)
+        customer_id: varchar(32)
+        order_status: varchar
+        order_purchase_timestamp: timestamp_ntz
+        order_approved_at: timestamp_ntz
+        order_delivered_carrier_date: timestamp_ntz
+        order_delivered_customer_date: timestamp_ntz
+        order_estimated_delivery_date: timestamp_ntz
+
+    olist_products_dataset:
+      +column_types:
+        product_id: varchar(32)
+        product_category_name: varchar
+        product_name_lenght: number(10,0)
+        product_description_lenght: number(10,0)
+        product_photos_qty: number(10,0)
+        product_weight_g: number(10,0)
+        product_length_cm: number(10,0)
+        product_height_cm: number(10,0)
+        product_width_cm: number(10,0)
+
+    olist_sellers_dataset:
+      +column_types:
+        seller_id: varchar(32)
+        seller_zip_code_prefix: varchar(5)
+        seller_city: varchar
+        seller_state: varchar(2)
+
+    product_category_name_translation:
+      +column_types:
+        product_category_name: varchar
+        product_category_name_english: varchar
