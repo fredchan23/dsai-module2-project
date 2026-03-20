@@ -1,6 +1,31 @@
 # Olist dbt Project
 
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![Conda Env](https://img.shields.io/badge/Conda-spark-44A833.svg)](https://docs.conda.io/)
+[![dbt-snowflake](https://img.shields.io/badge/dbt--snowflake-1.11.3-orange.svg)](https://hub.getdbt.com/dbt-labs/dbt_snowflake/latest/)
+[![Dagster](https://img.shields.io/badge/Dagster-1.12.19-2F7DF6.svg)](https://dagster.io/)
+[![Warehouse](https://img.shields.io/badge/Warehouse-Snowflake-56B9EB.svg)](https://www.snowflake.com/)
+
 End-to-end dbt project for the [Olist Brazilian e-commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce), using **Snowflake** with raw sources in `OLIST.RAW` and dbt-built models materialized in `OLIST.DEV`. Raw data was ingested from BigQuery via GCS Parquet export and loaded into Snowflake using `COPY INTO`. This project transforms that raw layer into analytics-ready models.
+
+## At a Glance
+
+- Data flow: **BigQuery -> GCS (Parquet) -> Snowflake RAW -> dbt DEV marts**
+- Warehouse: **Snowflake** (`OLIST.RAW` for sources, `OLIST.DEV` for transformed models)
+- Transformation: **dbt** (`src` -> `dim`/`fct` -> `mart`)
+- Orchestration: **Dagster** (`my_dbt_dagster_project`)
+
+## Table of Contents
+
+- [Dataset Overview](#dataset-overview)
+- [Prerequisites](#prerequisites)
+- [Snowflake Bootstrap (Run Once)](#snowflake-bootstrap-run-once)
+- [Project Setup](#project-setup)
+- [Raw Data Ingestion (BQ -> GCS -> Snowflake)](#raw-data-ingestion-bq---gcs---snowflake)
+- [dbt Commands](#dbt-commands)
+- [Project Structure](#project-structure)
+- [Orchestration with Dagster](#orchestration-with-dagster)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -70,17 +95,31 @@ To create and use the dbt model layer in `OLIST.DEV`, run the companion grants i
 
 ## Project Setup
 
-### 1. Activate environment
+### 1. Create and activate the shared conda environment
+
+```bash
+cd /path/to/dsai-module2-project
+conda env create -f environment.spark.yml
+conda activate spark
+```
+
+If you already have the environment, update it with:
+
+```bash
+cd /path/to/dsai-module2-project
+conda env update -f environment.spark.yml --prune
+```
+
+This repository uses the existing `spark` conda environment for hands-on work. Learners can use the checked-in `environment.spark.yml` file instead of creating a separate virtual environment.
+
+### 2. Install the local Dagster package
+
+From the workspace root:
 
 ```bash
 conda activate spark
-cd /path/to/dsai-module2-project/olist
-```
-
-### 2. Install dbt Snowflake adapter
-
-```bash
-pip install dbt-snowflake==1.11.3
+cd /path/to/dsai-module2-project
+pip install -e "my_dbt_dagster_project[dev]"
 ```
 
 ### 3. Configure dbt profile from template
@@ -90,6 +129,7 @@ This repo ships a safe template at `olist/profiles.template.yml`.
 Create your local profile from it:
 
 ```bash
+cd /path/to/dsai-module2-project/olist
 cp profiles.template.yml profiles.yml
 ```
 
@@ -149,6 +189,8 @@ All checks must pass before running any dbt commands.
 
 Raw tables were loaded into `OLIST.RAW` via:
 
+> **Why this path was used:** This began as a team project, and the original raw exports were first landed in a teammate-owned GCS location for collaborative ingestion work. To make the workflow reproducible and independent for my own setup, I then moved the data into my own GCS path. From there, I extended the work as a personal learning exercise and side project by loading the same raw data into Snowflake and using dbt to build the transformation layer documented in this repository.
+
 1. **BigQuery export** — tables exported as Parquet (Snappy compressed) to GCS bucket `gs://olist-snowflake-export/olist_export/`
 2. **Snowflake GCS stage** — external stage `olist_gcs_stage` using storage integration `gcs_olist_integration`
 3. **COPY INTO** — schema inferred via `INFER_SCHEMA`, data loaded with `MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE`
@@ -176,7 +218,11 @@ COPY INTO OLIST.RAW.raw_orders
 
 ## dbt Commands
 
+Run these from `olist/`:
+
 ```bash
+cd /path/to/dsai-module2-project/olist
+
 # Validate connection and config
 dbt debug
 
@@ -229,7 +275,9 @@ dbt models are orchestrated by Dagster via the `my_dbt_dagster_project` package 
 ### Quick Start
 
 ```bash
+cd /path/to/dsai-module2-project
 conda activate spark
+pip install -e "my_dbt_dagster_project[dev]"
 cd my_dbt_dagster_project
 dagster dev
 ```

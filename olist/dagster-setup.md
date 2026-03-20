@@ -21,15 +21,17 @@ my_dbt_dagster_project/
 
 ## Installation
 
-From the workspace root, install the Dagster package with dev dependencies:
+From the workspace root, create or update the shared conda environment and then install the Dagster package with dev dependencies:
 
 ```bash
+conda env create -f environment.spark.yml
 conda activate spark
+conda env update -f environment.spark.yml --prune
 cd /path/to/dsai-module2-project
 pip install -e "my_dbt_dagster_project[dev]"
 ```
 
-This installs `dagster`, `dagster-dbt`, `dagster-webserver`, `dbt-core`, and `dbt-snowflake`.
+This uses the checked-in `environment.spark.yml` file so learners can reproduce the same conda-based setup instead of creating a separate virtual environment. The editable install adds the local Dagster package on top of the shared environment.
 
 ---
 

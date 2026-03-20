@@ -1,0 +1,16 @@
+name: spark
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - pip
+  - ipykernel
+  - openjdk=17
+  - pip:
+      - dagster==1.12.19
+      - dagster-cloud
+      - dagster-dbt==0.28.19
+      - dagster-webserver==1.12.19
+      - dbt-core==1.11.7
+      - dbt-snowflake==1.11.3
