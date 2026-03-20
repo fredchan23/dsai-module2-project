@@ -36,6 +36,21 @@ See `dataset-info.md` for the full schema diagram.
 | Snowflake account | Role `TRANSFORM`, warehouse `COMPUTE_WH` |
 | Private key pair | RSA key pair (PKCS8 PEM, passphrase-protected) |
 
+## Snowflake Bootstrap (Run Once)
+
+Use the worksheet script in `snowflakes-setup.md` to initialize Snowflake objects for this project:
+
+1. Creates `OLIST` database with `RAW` and `DEV` schemas.
+2. Creates roles/users (`TRANSFORM`, `REPORTER`, `dbt`, `PRESET`) and grants permissions.
+3. Loads all 9 raw OLIST tables into `OLIST.RAW` from GCS Parquet folders via `INFER_SCHEMA` + `COPY INTO`.
+
+Run both SQL blocks in this order:
+
+1. `Snowflake data import (manual)`
+2. `Snowflake user and role creation`
+
+File: `snowflakes-setup.md`
+
 ### Snowflake Role Privileges Required
 
 Run once as an account admin before using dbt:
@@ -68,9 +83,17 @@ cd /path/to/dsai-module2-project/olist
 pip install dbt-snowflake==1.11.3
 ```
 
-### 3. Configure `profiles.yml`
+### 3. Configure dbt profile from template
 
-The profile file lives **inside the project directory** (`olist/profiles.yml`), not `~/.dbt/`. Profile name must match `dbt_project.yml` (`olist`).
+This repo ships a safe template at `olist/profiles.template.yml`.
+
+Create your local profile from it:
+
+```bash
+cp profiles.template.yml profiles.yml
+```
+
+Then edit `profiles.yml` with your own Snowflake account/user/key details. The profile name must match `dbt_project.yml` (`olist`).
 
 ```yaml
 olist:
@@ -92,7 +115,7 @@ olist:
       threads: 1
 ```
 
-> **Security note:** Do not commit `profiles.yml` with real credentials to version control. Use environment variables or a secrets manager for shared/CI environments:
+> **Security note:** Never commit `profiles.yml` with real credentials. Use environment variables or a secrets manager for shared/CI environments:
 > ```yaml
 > private_key_passphrase: "{{ env_var('DBT_PRIVATE_KEY_PASSPHRASE') }}"
 > ```
@@ -129,6 +152,8 @@ Raw tables were loaded into `OLIST.RAW` via:
 1. **BigQuery export** — tables exported as Parquet (Snappy compressed) to GCS bucket `gs://olist-snowflake-export/olist_export/`
 2. **Snowflake GCS stage** — external stage `olist_gcs_stage` using storage integration `gcs_olist_integration`
 3. **COPY INTO** — schema inferred via `INFER_SCHEMA`, data loaded with `MATCH_BY_COLUMN_NAME = CASE_INSENSITIVE`
+
+The same ingestion pattern is codified in `snowflakes-setup.md` for repeatable setup.
 
 To re-ingest a table:
 ```sql
@@ -181,7 +206,8 @@ dbt ls
 ```
 olist/
 ├── dbt_project.yml          # Project config — seed column types, schema defaults
-├── profiles.yml             # Snowflake connection profile (not committed with secrets)
+├── profiles.template.yml    # Commit-safe template for learner setup
+├── profiles.yml             # Local Snowflake profile (git-ignored, do not commit)
 ├── models/
 │   ├── sources.yml          # Source definitions pointing to OLIST.RAW raw_* tables
 │   └── example/             # Starter example models (not production)
@@ -193,6 +219,39 @@ olist/
 ├── snapshots/               # SCD Type 2 snapshots
 └── target/                  # Compiled artifacts (git-ignored)
 ```
+
+---
+
+## Orchestration with Dagster
+
+dbt models are orchestrated by Dagster via the `my_dbt_dagster_project` package at the workspace root (sibling to `olist/`).
+
+### Quick Start
+
+```bash
+conda activate spark
+cd my_dbt_dagster_project
+dagster dev
+```
+
+Open **http://localhost:3000/** to access the Dagster UI.
+
+### Package Structure
+
+| File | Purpose |
+|---|---|
+| `assets.py` | `olist_dbt_assets` — runs `dbt build` (run + test) for all models |
+| `project.py` | `DbtProject` resolving `../olist` as the dbt project root |
+| `definitions.py` | Wires assets, schedules, and `DbtCliResource` |
+| `schedules.py` | Daily schedule (midnight UTC) materialising all models via `fqn:*` |
+
+### Install (once)
+
+```bash
+pip install -e "my_dbt_dagster_project[dev]"
+```
+
+For full setup details and troubleshooting, see [dagster-setup.md](dagster-setup.md).
 
 ---
 

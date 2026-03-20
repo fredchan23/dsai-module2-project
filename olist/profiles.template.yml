@@ -1,0 +1,17 @@
+olist:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: <account-locator>        # e.g. vrsugdf-gx74482
+      user: <snowflake-user>            # e.g. dbt
+      role: TRANSFORM
+      private_key: |
+        -----BEGIN ENCRYPTED PRIVATE KEY-----
+        <base64-encoded-key>
+        -----END ENCRYPTED PRIVATE KEY-----
+      private_key_passphrase: <passphrase>
+      database: OLIST
+      schema: DEV
+      warehouse: COMPUTE_WH
+      threads: 1

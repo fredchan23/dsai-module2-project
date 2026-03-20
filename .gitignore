@@ -19,3 +19,6 @@ __pycache__/
 .DS_Store
 .idea/
 .vscode/
+
+# Track dbt profile template only (keep real profiles ignored)
+!olist/profiles.template.yml
