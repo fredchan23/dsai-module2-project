@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980">
+  <defs>
+    <style>
+      .title { font: 700 28px Arial, sans-serif; fill: #1f2937; }
+      .subtitle { font: 500 15px Arial, sans-serif; fill: #4b5563; }
+      .label { font: 600 13px Arial, sans-serif; fill: #111827; }
+      .node { rx: 8; ry: 8; stroke-width: 1.5; }
+      .raw { fill: #f7f3e8; stroke: #8a6d3b; }
+      .src { fill: #eaf4ff; stroke: #2d6ea3; }
+      .dim { fill: #eafbea; stroke: #2e7d32; }
+      .fact { fill: #fff3e0; stroke: #ef6c00; }
+      .mart { fill: #fcecec; stroke: #b23a3a; }
+      .edge { stroke: #6b7280; stroke-width: 1.4; fill: none; }
+      .section { font: 700 14px Arial, sans-serif; fill: #374151; }
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#6b7280"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1500" height="980" fill="#ffffff"/>
+  <text x="40" y="55" class="title">Olist Input Schema and Transformation Flow</text>
+  <text x="40" y="82" class="subtitle">Raw Inputs → Staging Sources → Dimensions/Facts → Analytics Marts</text>
+
+  <text x="70" y="125" class="section">RAW</text>
+  <text x="370" y="125" class="section">SOURCE (src_*)</text>
+  <text x="720" y="125" class="section">DIMENSIONS / FACTS</text>
+  <text x="1160" y="125" class="section">MARTS</text>
+
+  <!-- Raw nodes -->
+  <rect class="node raw" x="40" y="150" width="250" height="40"/><text class="label" x="56" y="175">customers</text>
+  <rect class="node raw" x="40" y="200" width="250" height="40"/><text class="label" x="56" y="225">products</text>
+  <rect class="node raw" x="40" y="250" width="250" height="40"/><text class="label" x="56" y="275">sellers</text>
+  <rect class="node raw" x="40" y="300" width="250" height="40"/><text class="label" x="56" y="325">geolocation</text>
+  <rect class="node raw" x="40" y="350" width="250" height="40"/><text class="label" x="56" y="375">product_category_name_translation</text>
+  <rect class="node raw" x="40" y="400" width="250" height="40"/><text class="label" x="56" y="425">orders</text>
+  <rect class="node raw" x="40" y="450" width="250" height="40"/><text class="label" x="56" y="475">order_items</text>
+  <rect class="node raw" x="40" y="500" width="250" height="40"/><text class="label" x="56" y="525">order_payments</text>
+  <rect class="node raw" x="40" y="550" width="250" height="40"/><text class="label" x="56" y="575">order_reviews</text>
+
+  <!-- src nodes -->
+  <rect class="node src" x="340" y="150" width="290" height="40"/><text class="label" x="356" y="175">src_customers</text>
+  <rect class="node src" x="340" y="200" width="290" height="40"/><text class="label" x="356" y="225">src_products</text>
+  <rect class="node src" x="340" y="250" width="290" height="40"/><text class="label" x="356" y="275">src_sellers</text>
+  <rect class="node src" x="340" y="300" width="290" height="40"/><text class="label" x="356" y="325">src_geolocation</text>
+  <rect class="node src" x="340" y="350" width="290" height="40"/><text class="label" x="356" y="375">src_category_translation</text>
+  <rect class="node src" x="340" y="400" width="290" height="40"/><text class="label" x="356" y="425">src_orders</text>
+  <rect class="node src" x="340" y="450" width="290" height="40"/><text class="label" x="356" y="475">src_order_items</text>
+  <rect class="node src" x="340" y="500" width="290" height="40"/><text class="label" x="356" y="525">src_order_payments</text>
+  <rect class="node src" x="340" y="550" width="290" height="40"/><text class="label" x="356" y="575">src_order_reviews</text>
+
+  <!-- Dimensions -->
+  <rect class="node dim" x="690" y="170" width="250" height="40"/><text class="label" x="706" y="195">dim_customers</text>
+  <rect class="node dim" x="690" y="220" width="250" height="40"/><text class="label" x="706" y="245">dim_products</text>
+  <rect class="node dim" x="690" y="270" width="250" height="40"/><text class="label" x="706" y="295">dim_sellers</text>
+  <rect class="node dim" x="690" y="320" width="250" height="40"/><text class="label" x="706" y="345">dim_date</text>
+
+  <!-- Facts -->
+  <rect class="node fact" x="690" y="430" width="250" height="40"/><text class="label" x="706" y="455">fct_orders</text>
+  <rect class="node fact" x="690" y="480" width="250" height="40"/><text class="label" x="706" y="505">fct_order_items</text>
+  <rect class="node fact" x="690" y="530" width="250" height="40"/><text class="label" x="706" y="555">fact_reviews</text>
+
+  <!-- Marts -->
+  <rect class="node mart" x="1120" y="220" width="320" height="40"/><text class="label" x="1136" y="245">mart_monthly_sales</text>
+  <rect class="node mart" x="1120" y="270" width="320" height="40"/><text class="label" x="1136" y="295">mart_top_products</text>
+  <rect class="node mart" x="1120" y="320" width="320" height="40"/><text class="label" x="1136" y="345">mart_customer_rfm_raw</text>
+  <rect class="node mart" x="1120" y="370" width="320" height="40"/><text class="label" x="1136" y="395">mart_customer_rfm_scored</text>
+  <rect class="node mart" x="1120" y="420" width="320" height="40"/><text class="label" x="1136" y="445">mart_delivery_performance</text>
+  <rect class="node mart" x="1120" y="470" width="320" height="40"/><text class="label" x="1136" y="495">mart_seller_performance</text>
+
+  <!-- Raw -> src -->
+  <line class="edge" x1="290" y1="170" x2="340" y2="170" marker-end="url(#arrow)"/>
+  <line class="edge" x1="290" y1="220" x2="340" y2="220" marker-end="url(#arrow)"/>
+  <line class="edge" x1="290" y1="270" x2="340" y2="270" marker-end="url(#arrow)"/>
+  <line class="edge" x1="290" y1="320" x2="340" y2="320" marker-end="url(#arrow)"/>
+  <line class="edge" x1="290" y1="370" x2="340" y2="370" marker-end="url(#arrow)"/>
+  <line class="edge" x1="290" y1="420" x2="340" y2="420" marker-end="url(#arrow)"/>
+  <line class="edge" x1="290" y1="470" x2="340" y2="470" marker-end="url(#arrow)"/>
+  <line class="edge" x1="290" y1="520" x2="340" y2="520" marker-end="url(#arrow)"/>
+  <line class="edge" x1="290" y1="570" x2="340" y2="570" marker-end="url(#arrow)"/>
+
+  <!-- src -> dims -->
+  <line class="edge" x1="630" y1="170" x2="690" y2="190" marker-end="url(#arrow)"/>
+  <line class="edge" x1="630" y1="220" x2="690" y2="240" marker-end="url(#arrow)"/>
+  <line class="edge" x1="630" y1="370" x2="690" y2="240" marker-end="url(#arrow)"/>
+  <line class="edge" x1="630" y1="270" x2="690" y2="290" marker-end="url(#arrow)"/>
+  <line class="edge" x1="630" y1="420" x2="690" y2="340" marker-end="url(#arrow)"/>
+
+  <!-- src -> facts -->
+  <line class="edge" x1="630" y1="420" x2="690" y2="450" marker-end="url(#arrow)"/>
+  <line class="edge" x1="630" y1="470" x2="690" y2="500" marker-end="url(#arrow)"/>
+  <line class="edge" x1="630" y1="520" x2="690" y2="450" marker-end="url(#arrow)"/>
+  <line class="edge" x1="630" y1="570" x2="690" y2="550" marker-end="url(#arrow)"/>
+
+  <!-- dims -> facts -->
+  <line class="edge" x1="940" y1="190" x2="940" y2="430" marker-end="url(#arrow)"/>
+  <line class="edge" x1="940" y1="340" x2="900" y2="430" marker-end="url(#arrow)"/>
+  <line class="edge" x1="940" y1="240" x2="900" y2="480" marker-end="url(#arrow)"/>
+  <line class="edge" x1="940" y1="290" x2="920" y2="480" marker-end="url(#arrow)"/>
+
+  <!-- facts/dims -> marts -->
+  <line class="edge" x1="940" y1="450" x2="1120" y2="240" marker-end="url(#arrow)"/>
+  <line class="edge" x1="940" y1="500" x2="1120" y2="290" marker-end="url(#arrow)"/>
+  <line class="edge" x1="940" y1="240" x2="1120" y2="290" marker-end="url(#arrow)"/>
+  <line class="edge" x1="940" y1="450" x2="1120" y2="340" marker-end="url(#arrow)"/>
+  <line class="edge" x1="1280" y1="360" x2="1280" y2="370" marker-end="url(#arrow)"/>
+  <line class="edge" x1="940" y1="450" x2="1120" y2="440" marker-end="url(#arrow)"/>
+  <line class="edge" x1="940" y1="190" x2="1120" y2="440" marker-end="url(#arrow)"/>
+
+  <line class="edge" x1="940" y1="500" x2="1120" y2="490" marker-end="url(#arrow)"/>
+  <line class="edge" x1="940" y1="450" x2="1120" y2="490" marker-end="url(#arrow)"/>
+  <line class="edge" x1="940" y1="550" x2="1120" y2="490" marker-end="url(#arrow)"/>
+  <line class="edge" x1="940" y1="290" x2="1120" y2="490" marker-end="url(#arrow)"/>
+
+  <text x="40" y="940" class="subtitle">Note: geolocation is standardized in src_geolocation and available for future geo-enriched marts.</text>
+</svg>

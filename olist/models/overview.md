@@ -35,34 +35,7 @@ This project transforms raw Olist e-commerce data into a layered analytics model
 
 The diagram below shows how raw inputs are standardized into `src_*` models before feeding dimensions, facts, and marts.
 
-```text
-RAW INPUT TABLES
-  customers ---------------------------> src_customers -----> dim_customers ---+
-  products ----------------------------> src_products  -----> dim_products  --+ |
-  sellers -----------------------------> src_sellers   -----> dim_sellers   -+ | |
-  geolocation -------------------------> src_geolocation ----------------------+ | |
-  product_category_name_translation --> src_category_translation --------------+ | |
-  orders ------------------------------> src_orders ----------------------------+ | |
-  order_items -------------------------> src_order_items -----------------------+ | |
-  order_payments ----------------------> src_order_payments --------------------+ | |
-  order_reviews -----------------------> src_order_reviews ---------------------+ | |
-																								 +------v-v-v-------+
-																								 | FACT LAYER        |
-																								 | fct_orders        |
-																								 | fct_order_items   |
-																								 | fact_reviews      |
-																								 +---------+---------+
-																											  |
-																											  v
-																								 +-------------------+
-																								 | MART LAYER        |
-																								 | mart_monthly_sales|
-																								 | mart_top_products |
-																								 | mart_customer_rfm*|
-																								 | mart_delivery_*   |
-																								 | mart_seller_*     |
-																								 +-------------------+
-```
+![Input schema and transformation flow](input_schema_diagram.svg)
 
 ## Key Business Logic Highlights
 
