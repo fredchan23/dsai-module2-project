@@ -6,7 +6,15 @@ create or replace transient table OLIST.DEV.dim_customers
     
     
     
-    as (with customer_base as (
+    as (with  __dbt__cte__src_customers as (
+select
+    cast("customer_id" as varchar(32)) as customer_id,
+    cast("customer_unique_id" as varchar(32)) as customer_unique_id,
+    cast("customer_zip_code_prefix" as varchar(5)) as customer_zip_code_prefix,
+    trim("customer_city") as customer_city,
+    trim("customer_state") as customer_state
+from OLIST.RAW.raw_customers
+), customer_base as (
     select
         customer_unique_id,
         customer_id,
@@ -20,7 +28,7 @@ create or replace transient table OLIST.DEV.dim_customers
         count(distinct customer_id) over (
             partition by customer_unique_id
         ) as customer_id_count
-    from OLIST.DEV.src_customers
+    from __dbt__cte__src_customers
 )
 
 select
