@@ -245,6 +245,26 @@ dbt compile
 dbt ls
 ```
 
+### Publish docs to root `docs/` (GitHub Pages compatible)
+
+`dbt docs generate` writes files to `olist/target/`. GitHub Pages expects real files in a tracked folder, so this repo syncs those artifacts to root `docs/`.
+
+Run from repo root:
+
+```bash
+conda run -n spark ./scripts/sync_docs_from_target.sh
+```
+
+Typical flow:
+
+```bash
+cd /path/to/dsai-module2-project/olist
+dbt docs generate
+
+cd /path/to/dsai-module2-project
+conda run -n spark ./scripts/sync_docs_from_target.sh
+```
+
 ---
 
 ## Project Structure

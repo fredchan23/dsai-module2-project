@@ -25,3 +25,7 @@ __pycache__/
 
 # conda environment files
 !environment.spark.yml
+
+# Track published dbt docs at repo root (for GitHub Pages)
+!docs/
+!docs/**

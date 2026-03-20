@@ -1,0 +1,1 @@
+select table_name, column_name from OLIST.INFORMATION_SCHEMA.COLUMNS where table_schema='RAW' and table_name in ('RAW_ORDERS','RAW_ORDER_ITEMS','RAW_ORDER_PAYMENTS','RAW_ORDER_REVIEWS','RAW_CUSTOMERS','RAW_PRODUCTS','RAW_SELLERS','RAW_GEOLOCATION','RAW_CATEGORY_TRANSLATION') order by table_name, ordinal_position
