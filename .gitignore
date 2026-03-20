@@ -26,6 +26,12 @@ __pycache__/
 # conda environment files
 !environment.spark.yml
 
+# Allow GitHub Actions workflows
+!.github/
+!.github/workflows/
+!.github/workflows/*.yml
+!.github/workflows/*.yaml
+
 # Track published dbt docs at repo root (for GitHub Pages)
 !docs/
 !docs/**

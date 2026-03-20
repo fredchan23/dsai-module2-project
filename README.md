@@ -265,6 +265,8 @@ cd /path/to/dsai-module2-project
 conda run -n spark ./scripts/sync_docs_from_target.sh
 ```
 
+This sync also runs automatically on every push via [`.github/workflows/sync-docs.yml`](.github/workflows/sync-docs.yml).
+
 ---
 
 ## Project Structure
