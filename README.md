@@ -12,6 +12,15 @@ Primary project documentation is published at:
 
 - https://fredchan23.github.io/dsai-module2-project
 
+How to navigate the dbt native docs UI:
+
+1. Open the docs link and go to the Project tab.
+2. Use Sources in the left panel to view raw source tables and upstream metadata.
+3. Use Exposures in the left panel to view downstream dashboards and other business-facing assets.
+4. Use Project in the left panel to browse dbt models, tests, and lineage grouped by project structure.
+5. Click any node to open details, then use the lineage graph to move upstream or downstream.
+6. Use search at the top of the docs UI to jump directly to a model, source, or exposure.
+
 Related setup guide:
 
 - [olist/preset-hosting-dashboard-on-gcp-setup.md](olist/preset-hosting-dashboard-on-gcp-setup.md) (Preset embedded dashboard hosting on GCP Cloud Run)
