@@ -1,3 +1,5 @@
+{% docs __overview__ %}
+
 # Olist Analytics Transformation Overview
 
 This project transforms raw Olist e-commerce data into a layered analytics model designed for BI, KPI tracking, and customer/seller performance analysis.
@@ -77,3 +79,4 @@ The project enforces model reliability through:
 - Referential integrity tests (`relationships`) between facts, dimensions, and marts.
 - Domain checks (`accepted_values`) for controlled business labels such as RFM segments.
 
+{% enddocs %}
