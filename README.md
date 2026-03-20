@@ -6,6 +6,16 @@
 [![Dagster](https://img.shields.io/badge/Dagster-1.12.19-2F7DF6.svg)](https://dagster.io/)
 [![Warehouse](https://img.shields.io/badge/Warehouse-Snowflake-56B9EB.svg)](https://www.snowflake.com/)
 
+## DBT Documentation
+
+Primary project documentation is published at:
+
+- https://fredchan23.github.io/dsai-module2-project
+
+Related setup guide:
+
+- [olist/preset-hosting-dashboard-on-gcp-setup.md](olist/preset-hosting-dashboard-on-gcp-setup.md) (Preset embedded dashboard hosting on GCP Cloud Run)
+
 End-to-end dbt project for the [Olist Brazilian e-commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce), using **Snowflake** with raw sources in `OLIST.RAW` and dbt-built models materialized in `OLIST.DEV`. Raw data was ingested from BigQuery via GCS Parquet export and loaded into Snowflake using `COPY INTO`. This project transforms that raw layer into analytics-ready models.
 
 ## At a Glance
@@ -17,6 +27,7 @@ End-to-end dbt project for the [Olist Brazilian e-commerce dataset](https://www.
 
 ## Table of Contents
 
+- [DBT Documentation](#dbt-documentation)
 - [Dataset Overview](#dataset-overview)
 - [Prerequisites](#prerequisites)
 - [Snowflake Bootstrap (Run Once)](#snowflake-bootstrap-run-once)
