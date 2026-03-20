@@ -21,7 +21,12 @@ jobs:
         run: chmod +x scripts/sync_docs_from_target.sh
 
       - name: Sync docs from olist/target
-        run: scripts/sync_docs_from_target.sh
+        run: |
+          if [[ -f olist/target/index.html && -f olist/target/manifest.json ]]; then
+            scripts/sync_docs_from_target.sh
+          else
+            echo "No dbt docs artifacts found in olist/target; skipping sync."
+          fi
 
       - name: Commit synced docs if changed
         uses: stefanzweifel/git-auto-commit-action@v5
