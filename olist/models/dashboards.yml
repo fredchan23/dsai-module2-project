@@ -1,0 +1,39 @@
+exposures:
+  - name: executive_dashboard
+    label: Executive Dashboard (Preset)
+    type: dashboard
+    maturity: low
+    url: https://embedded-example-521506040142.asia-southeast1.run.app
+    description: Current Preset embedded dashboard for Olist sales. Planned to be replaced by a Lightdash dashboard.
+
+    depends_on:
+      - ref('mart_monthly_sales')
+      - ref('mart_top_products')
+      - ref('mart_seller_performance')
+
+    owner:
+      name: Fred Chan
+      email: dbtstudent@gmail.com
+
+  - name: lightdash_executive_dashboard
+    label: Executive Dashboard (Lightdash)
+    type: dashboard
+    maturity: low
+    url: https://app.lightdash.cloud
+    description: Planned Lightdash replacement dashboard for Olist sales, powered by the dbt mart layer and Lightdash metrics defined in YAML.
+
+    depends_on:
+      - ref('mart_monthly_sales')
+      - ref('mart_top_products')
+      - ref('mart_seller_performance')
+      - ref('mart_delivery_performance')
+      - ref('mart_customer_rfm_scored')
+
+    config:
+      meta:
+        tool: lightdash
+        migration_status: planned
+
+    owner:
+      name: Fred Chan
+      email: dbtstudent@gmail.com

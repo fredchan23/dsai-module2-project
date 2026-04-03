@@ -21,8 +21,8 @@ __pycache__/
 .vscode/
 
 # Track dbt profile template only (keep real profiles ignored)
-!olist/profiles.template.yml
-!olist/dbt_project.yml
+!olist/*/*.yml
+!olist/*.yml
 
 # conda environment files
 !environment.spark.yml
