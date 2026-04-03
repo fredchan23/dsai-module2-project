@@ -21,9 +21,10 @@ How to navigate the dbt native docs UI:
 5. Click any node to open details, then use the lineage graph to move upstream or downstream.
 6. Use search at the top of the docs UI to jump directly to a model, source, or exposure.
 
-Related setup guide:
+Related setup guides:
 
 - [olist/preset-hosting-dashboard-on-gcp-setup.md](olist/preset-hosting-dashboard-on-gcp-setup.md) (Preset embedded dashboard hosting on GCP Cloud Run)
+- [olist/lightdash-setup.md](olist/lightdash-setup.md) (Lightdash migration and setup path for the Olist BI dashboard)
 
 End-to-end dbt project for the [Olist Brazilian e-commerce dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce), using **Snowflake** with raw sources in `OLIST.RAW` and dbt-built models materialized in `OLIST.DEV`. Raw data was ingested from BigQuery via GCS Parquet export and loaded into Snowflake using `COPY INTO`. This project transforms that raw layer into analytics-ready models.
 
