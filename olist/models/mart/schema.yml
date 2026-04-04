@@ -1,0 +1,385 @@
+version: 2
+
+models:
+  - name: mart_monthly_sales
+    description: Monthly sales mart with revenue, order volume, and customer counts.
+    config:
+      meta:
+        label: Monthly Sales
+        group_label: Executive Dashboard
+        primary_key: month_start_date
+        default_time_dimension:
+          field: month_start_date
+          interval: MONTH
+        metrics:
+          total_orders:
+            label: Total Orders
+            type: sum
+            sql: ${TABLE}.order_count
+            groups: ['Sales']
+          total_customers:
+            label: Total Customers
+            type: sum
+            sql: ${TABLE}.customer_count
+            groups: ['Sales']
+          total_revenue:
+            label: Total Revenue
+            type: sum
+            sql: ${TABLE}.revenue_incl_freight
+            groups: ['Sales']
+          average_order_value_metric:
+            label: Average Order Value
+            type: average
+            sql: ${TABLE}.average_order_value
+            groups: ['Sales']
+    columns:
+      - name: month_start_date
+        description: First day of the reporting month.
+        config:
+          meta:
+            dimension:
+              type: date
+              label: Month
+              time_intervals:
+                - MONTH
+                - QUARTER
+                - YEAR
+              groups:
+                - Calendar
+        data_tests:
+          - not_null
+          - unique
+      - name: order_count
+        description: Number of orders placed in the month.
+        config:
+          meta:
+            dimension:
+              type: number
+              label: Order Count
+              groups:
+                - Sales
+        data_tests:
+          - not_null
+      - name: revenue_incl_freight
+        description: Revenue including freight for the month.
+        config:
+          meta:
+            dimension:
+              type: number
+              label: Revenue incl. Freight
+              groups:
+                - Sales
+        data_tests:
+          - not_null
+
+  - name: mart_top_products
+    description: Product performance mart with revenue and unit volume by product and category.
+    config:
+      meta:
+        label: Top Products
+        group_label: Executive Dashboard
+        primary_key: product_id
+        metrics:
+          distinct_products:
+            label: Distinct Products
+            type: count_distinct
+            sql: ${TABLE}.product_id
+            groups: ['Product Performance']
+          total_orders:
+            label: Total Orders
+            type: sum
+            sql: ${TABLE}.order_count
+            groups: ['Product Performance']
+          units_sold_metric:
+            label: Units Sold
+            type: sum
+            sql: ${TABLE}.units_sold
+            groups: ['Product Performance']
+          total_revenue:
+            label: Total Revenue
+            type: sum
+            sql: ${TABLE}.revenue_incl_freight
+            groups: ['Product Performance']
+    columns:
+      - name: product_id
+        description: Unique product identifier.
+        config:
+          meta:
+            dimension:
+              type: string
+              label: Product ID
+              groups:
+                - Catalog
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+      - name: product_category_name_english
+        description: Product category translated to English.
+        config:
+          meta:
+            dimension:
+              type: string
+              label: Product Category
+              groups:
+                - Catalog
+        data_tests:
+          - not_null
+      - name: units_sold
+        description: Number of units sold for the product.
+        config:
+          meta:
+            dimension:
+              type: number
+              label: Units Sold
+              groups:
+                - Product Performance
+        data_tests:
+          - not_null
+      - name: revenue_incl_freight
+        description: Revenue including freight for the product.
+        config:
+          meta:
+            dimension:
+              type: number
+              label: Revenue incl. Freight
+              groups:
+                - Product Performance
+        data_tests:
+          - not_null
+
+  - name: mart_customer_rfm_raw
+    description: Customer-level raw recency, frequency, and monetary metrics.
+    columns:
+      - name: customer_unique_id
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_unique_id
+      - name: recency_days
+        data_tests:
+          - not_null
+      - name: frequency_orders
+        data_tests:
+          - not_null
+      - name: monetary_value
+        data_tests:
+          - not_null
+
+  - name: mart_customer_rfm_scored
+    description: Customer-level RFM scores and segment labels built on top of raw RFM metrics.
+    config:
+      meta:
+        label: Customer RFM Segments
+        group_label: Executive Dashboard
+        primary_key: customer_unique_id
+        metrics:
+          customers:
+            label: Customers
+            type: count_distinct
+            sql: ${TABLE}.customer_unique_id
+            groups: ['Customer Analytics']
+          total_monetary_value:
+            label: Total Monetary Value
+            type: sum
+            sql: ${TABLE}.monetary_value
+            groups: ['Customer Analytics']
+          average_monetary_value_metric:
+            label: Average Monetary Value
+            type: average
+            sql: ${TABLE}.monetary_value
+            groups: ['Customer Analytics']
+          average_recency_days_metric:
+            label: Average Recency Days
+            type: average
+            sql: ${TABLE}.recency_days
+            groups: ['Customer Analytics']
+    columns:
+      - name: customer_unique_id
+        description: Unique customer identifier across orders.
+        config:
+          meta:
+            dimension:
+              type: string
+              label: Customer Unique ID
+              groups:
+                - Customer
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('mart_customer_rfm_raw')
+                field: customer_unique_id
+      - name: recency_score
+        data_tests:
+          - not_null
+      - name: frequency_score
+        data_tests:
+          - not_null
+      - name: monetary_score
+        data_tests:
+          - not_null
+      - name: segment_label
+        description: RFM segment assigned to the customer.
+        config:
+          meta:
+            dimension:
+              type: string
+              label: RFM Segment
+              groups:
+                - Customer
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - champions
+                  - loyal_customers
+                  - recent_customers
+                  - at_risk
+                  - hibernating
+                  - potential_loyalists
+
+  - name: mart_delivery_performance
+    description: State-level delivery mart using delivered orders with complete delivery timestamps.
+    config:
+      meta:
+        label: Delivery Performance
+        group_label: Executive Dashboard
+        primary_key: customer_state
+        metrics:
+          delivery_orders:
+            label: Eligible Delivery Orders
+            type: sum
+            sql: ${TABLE}.eligible_delivery_order_count
+            groups: ['Operations']
+          on_time_orders:
+            label: On-Time Orders
+            type: sum
+            sql: ${TABLE}.on_time_delivery_order_count
+            groups: ['Operations']
+          late_orders:
+            label: Late Orders
+            type: sum
+            sql: ${TABLE}.late_delivery_order_count
+            groups: ['Operations']
+          on_time_rate_metric:
+            label: On-Time Delivery Rate
+            type: average
+            sql: ${TABLE}.on_time_delivery_rate
+            groups: ['Operations']
+          delivery_revenue:
+            label: Delivery Revenue
+            type: sum
+            sql: ${TABLE}.revenue_incl_freight
+            groups: ['Operations']
+    columns:
+      - name: customer_state
+        description: Customer state used for delivery aggregation.
+        config:
+          meta:
+            dimension:
+              type: string
+              label: Customer State
+              groups:
+                - Geography
+        data_tests:
+          - not_null
+          - unique
+      - name: eligible_delivery_order_count
+        data_tests:
+          - not_null
+      - name: on_time_delivery_rate
+        description: Share of delivered orders that arrived on or before the estimated date.
+        config:
+          meta:
+            dimension:
+              type: number
+              label: On-Time Delivery Rate
+              groups:
+                - Operations
+        data_tests:
+          - not_null
+
+  - name: mart_seller_performance
+    description: Seller-level performance mart with revenue, delivery, and review quality metrics.
+    config:
+      meta:
+        label: Seller Performance
+        group_label: Executive Dashboard
+        primary_key: seller_id
+        default_time_dimension:
+          field: first_order_date
+          interval: MONTH
+        metrics:
+          sellers:
+            label: Sellers
+            type: count_distinct
+            sql: ${TABLE}.seller_id
+            groups: ['Seller Analytics']
+          total_orders:
+            label: Total Orders
+            type: sum
+            sql: ${TABLE}.order_count
+            groups: ['Seller Analytics']
+          items_sold_metric:
+            label: Items Sold
+            type: sum
+            sql: ${TABLE}.items_sold
+            groups: ['Seller Analytics']
+          total_revenue:
+            label: Total Revenue
+            type: sum
+            sql: ${TABLE}.revenue_incl_freight
+            groups: ['Seller Analytics']
+          average_review_score_metric:
+            label: Average Review Score
+            type: average
+            sql: ${TABLE}.average_review_score
+            groups: ['Seller Analytics']
+          on_time_delivery_rate_metric:
+            label: On-Time Delivery Rate
+            type: average
+            sql: ${TABLE}.on_time_delivery_rate
+            groups: ['Seller Analytics']
+    columns:
+      - name: seller_id
+        description: Unique seller identifier.
+        config:
+          meta:
+            dimension:
+              type: string
+              label: Seller ID
+              groups:
+                - Seller
+        data_tests:
+          - not_null
+          - unique
+          - relationships:
+              arguments:
+                to: ref('dim_sellers')
+                field: seller_id
+      - name: order_count
+        data_tests:
+          - not_null
+      - name: revenue_incl_freight
+        data_tests:
+          - not_null
+      - name: on_time_delivery_rate
+        description: Share of eligible seller orders delivered on time.
+        config:
+          meta:
+            dimension:
+              type: number
+              label: On-Time Delivery Rate
+              groups:
+                - Seller Analytics
+        data_tests:
+          - not_null

@@ -40,11 +40,14 @@ Start with these models when building the replacement dashboard:
 Use the same warehouse target as your dbt project:
 
 - **Warehouse type:** `Snowflake`
+- **Account:** `vrsugdf-gx74482` (or your org-account identifier from Snowsight)
 - **Database:** `OLIST`
 - **Schema:** `DEV`
 - **Warehouse:** `COMPUTE_WH`
 - **Role:** preferably `REPORTER`
 - **User:** use a read-only reporting user
+
+> For the **Account** field, enter only the Snowflake account identifier/subdomain — for example `vrsugdf-gx74482`. Do **not** paste `https://...snowflakecomputing.com`, and do **not** include extra path segments.
 
 > You can reuse the existing `PRESET` / `REPORTER` access pattern or create a dedicated `LIGHTDASH` user with the same read-only grants.
 

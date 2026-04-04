@@ -1,0 +1,100 @@
+version: 2
+
+models:
+  - name: src_orders
+    description: Standardized order records from raw source.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+          - unique
+      - name: customer_id
+        data_tests:
+          - not_null
+      - name: order_purchase_ts
+        data_tests:
+          - not_null
+
+  - name: src_order_items
+    description: Standardized order item records from raw source.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+      - name: order_item_id
+        data_tests:
+          - not_null
+      - name: product_id
+        data_tests:
+          - not_null
+      - name: seller_id
+        data_tests:
+          - not_null
+
+  - name: src_order_payments
+    description: Standardized payment records from raw source.
+    columns:
+      - name: order_id
+        data_tests:
+          - not_null
+      - name: payment_value
+        data_tests:
+          - not_null
+
+  - name: src_order_reviews
+    description: Standardized order review records from raw source.
+    columns:
+      - name: review_id
+        data_tests:
+          - not_null
+      - name: order_id
+        data_tests:
+          - not_null
+      - name: review_score
+        data_tests:
+          - not_null
+
+  - name: src_customers
+    description: Standardized customer records from raw source.
+    columns:
+      - name: customer_id
+        data_tests:
+          - not_null
+          - unique
+      - name: customer_unique_id
+        data_tests:
+          - not_null
+
+  - name: src_products
+    description: Standardized product records from raw source.
+    columns:
+      - name: product_id
+        data_tests:
+          - not_null
+          - unique
+
+  - name: src_sellers
+    description: Standardized seller records from raw source.
+    columns:
+      - name: seller_id
+        data_tests:
+          - not_null
+          - unique
+
+  - name: src_geolocation
+    description: Standardized geolocation records from raw source.
+    columns:
+      - name: geolocation_zip_code_prefix
+        data_tests:
+          - not_null
+
+  - name: src_category_translation
+    description: Standardized product category translation records.
+    columns:
+      - name: product_category_name
+        data_tests:
+          - not_null
+          - unique
+      - name: product_category_name_english
+        data_tests:
+          - not_null

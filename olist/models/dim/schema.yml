@@ -1,0 +1,37 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: Customer dimension keyed by customer_unique_id for repurchase analysis.
+    columns:
+      - name: customer_unique_id
+        data_tests:
+          - not_null
+          - unique
+      - name: representative_customer_id
+        data_tests:
+          - not_null
+
+  - name: dim_products
+    description: Product dimension enriched with translated category labels.
+    columns:
+      - name: product_id
+        data_tests:
+          - not_null
+          - unique
+
+  - name: dim_sellers
+    description: Seller dimension with location attributes.
+    columns:
+      - name: seller_id
+        data_tests:
+          - not_null
+          - unique
+
+  - name: dim_date
+    description: Calendar date dimension generated from order lifecycle date range.
+    columns:
+      - name: date_day
+        data_tests:
+          - not_null
+          - unique

@@ -1,0 +1,160 @@
+version: 2
+
+models:
+  - name: fct_orders
+    description: Order-grain fact table with core order KPIs and lifecycle timestamps.
+    columns:
+      - name: order_id
+        description: Unique identifier for each order
+        data_tests:
+          - not_null
+          - unique
+      - name: customer_unique_id
+        description: Unique identifier for the customer
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_unique_id
+      - name: order_date
+        description: Date when the order was placed
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+          - dbt_expectations.expect_column_values_to_be_of_type:
+              arguments:
+                column_type: date
+      - name: gmv
+        description: Gross merchandise value
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: revenue_incl_freight
+        description: Total revenue including freight charges
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: total_payment_value
+        description: Total payment value for the order
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: order_item_count
+        description: Number of items in the order
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: payment_count
+        description: Number of payment records for the order
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+      - name: avg_review_score
+        description: Average review score for the order
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 1
+                max_value: 5
+                row_condition: "avg_review_score is not null"
+      - name: is_delivered
+        description: Boolean flag indicating if the order was delivered
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              arguments:
+                value_set: [true, false]
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              arguments:
+                value_set: [true]
+                row_condition: "order_status = 'delivered'"
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              arguments:
+                value_set: [false]
+                row_condition: "order_status != 'delivered'"
+      - name: is_late
+        description: Boolean flag indicating if the order was delivered late
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              arguments:
+                value_set: [true, false]
+      - name: delivery_days
+        description: Number of days between order purchase and delivery
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 365
+                row_condition: "order_delivered_customer_ts is not null"
+      - name: days_to_ship
+        description: Number of days between order purchase and shipping
+      - name: order_count
+        description: Count of orders (always 1 at order grain level)
+        data_tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              arguments:
+                value_set: [1]
+
+  - name: fct_order_items
+    description: Order-item-grain fact table enriched with product, seller, and order context.
+    columns:
+      - name: order_id
+        description: Unique identifier for each order
+        data_tests:
+          - not_null
+      - name: order_item_id
+        description: Sequential identifier for items within an order
+        data_tests:
+          - not_null
+      - name: product_id
+        description: Unique identifier for the product
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+      - name: seller_id
+        description: Unique identifier for the seller
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_sellers')
+                field: seller_id
+      - name: total_item_value
+        description: Total value of the order item including freight
+        data_tests:
+          - not_null
+
+  - name: fact_reviews
+    description: Order-grain fact table with one review per order (latest by review_creation_ts).
+    columns:
+      - name: order_id
+        description: Unique identifier for each order
+        data_tests:
+          - not_null
+          - unique
+      - name: review_score
+        description: Customer review score for the order
+        data_tests:
+          - not_null
+      - name: is_low_score
+        description: Boolean flag indicating if the review score is low
+        data_tests:
+          - not_null

@@ -3,7 +3,7 @@ olist:
   outputs:
     dev:
       type: snowflake
-      account: <account-locator>        # e.g. vrsugdf-gx74482
+      account: <account-locator>        # subdomain only, e.g. vrsugdf-gx74482 (no https:// or .snowflakecomputing.com)
       user: <snowflake-user>            # e.g. dbt
       role: TRANSFORM
       private_key: |

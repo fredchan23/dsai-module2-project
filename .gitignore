@@ -1,6 +1,8 @@
 olist/seeds/
 rsa_key.p8
 rsa_key.pub
+rsa_key_lightdash_unencrypted.p8
+.secrets/
 my_dbt_dagster_project/*
 *.yml
 *.yaml
@@ -20,9 +22,11 @@ __pycache__/
 .idea/
 .vscode/
 
-# Track dbt profile template only (keep real profiles ignored)
-!olist/*/*.yml
+# Track dbt project YAML files needed by GitHub/Lightdash while keeping secrets ignored
 !olist/*.yml
+!olist/*/*.yml
+!olist/models/**/*.yml
+!olist/models/**/*.yaml
 
 # conda environment files
 !environment.spark.yml
@@ -36,3 +40,4 @@ __pycache__/
 # Track published dbt docs at repo root (for GitHub Pages)
 !docs/
 !docs/**
+rsa_key_lightdash.p8
