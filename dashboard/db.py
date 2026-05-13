@@ -15,6 +15,14 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Bridge st.secrets → os.environ for Streamlit Community Cloud deployment
+try:
+    for _k, _v in st.secrets.items():
+        if _k not in os.environ:
+            os.environ[_k] = str(_v)
+except Exception:
+    pass
+
 _DB = os.getenv("SNOWFLAKE_DATABASE", "OLIST")
 _SCHEMA = os.getenv("SNOWFLAKE_SCHEMA", "DEV")
 

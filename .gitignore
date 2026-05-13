@@ -15,6 +15,7 @@ my_dbt_dagster_project/*
 .venv/
 venv/
 dashboard/.env
+dashboard/.streamlit/secrets.toml
 __pycache__/
 *.pyc
 *.gitkeep
