@@ -24,22 +24,23 @@ def render():
 
     states = ["All states"] + sorted(df["customer_state"].dropna().unique().tolist())
 
-    st.html("""
-    <div class="obi-page-head">
-      <div>
-        <div class="obi-eyebrow">Section 03 · CRM</div>
-        <h1>Customer Health</h1>
-        <p class="sub">RFM segmentation across the active base — recency, frequency, monetary value — sized by spend.</p>
-      </div>
-    """)
-
-    # State filter inline in the page meta
-    selected_state = st.selectbox(
-        "Filter by state",
-        states,
-        label_visibility="collapsed",
-    )
-    st.html("</div>")
+    head_col, filter_col = st.columns([3, 1])
+    with head_col:
+        st.html("""
+        <div style="margin-bottom:24px">
+          <div class="obi-eyebrow">Section 03 · CRM</div>
+          <h1 style="font-family:var(--f-display);font-weight:400;font-size:42px;
+                     line-height:1;letter-spacing:-.02em;margin:0 0 8px;color:var(--ink)">
+            Customer Health
+          </h1>
+          <p style="margin:0;color:var(--muted);font-size:13.5px;max-width:56ch">
+            RFM segmentation across the active base — recency, frequency, monetary value — sized by spend.
+          </p>
+        </div>
+        """)
+    with filter_col:
+        st.html('<div style="height:52px"></div>')
+        selected_state = st.selectbox("State", states, label_visibility="collapsed")
 
     filtered = df if selected_state == "All states" else df[df["customer_state"] == selected_state]
 

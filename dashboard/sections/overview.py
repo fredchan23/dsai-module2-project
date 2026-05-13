@@ -44,7 +44,7 @@ def render():
     # ── Date range filter ────────────────────────────────────────────────────────
     months = sorted(df["month_start_date"].astype(str).unique())
 
-    fc1, fc2, _spacer = st.columns([1, 1, 3])
+    _spacer, fc1, fc2 = st.columns([3, 1, 1])
     with fc1:
         start_month = st.selectbox(
             "From", months, index=0,

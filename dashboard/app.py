@@ -278,6 +278,26 @@ html, body, [data-testid="stApp"] {
 .obi-crumb b { color: var(--ink); font-weight: 600; }
 .obi-crumb-sep { margin: 0 7px; color: var(--muted-2); }
 
+/* ── Selectbox overrides ─────────────────────────────────────────────────────── */
+[data-testid="stSelectbox"] label {
+  font-size: 11px !important; letter-spacing: .1em !important;
+  text-transform: uppercase !important; font-weight: 600 !important;
+  color: var(--muted) !important; font-family: var(--f-ui) !important;
+}
+[data-testid="stSelectbox"] > div > div[data-baseweb="select"] > div {
+  background: var(--card) !important;
+  border: 1px solid var(--line-strong) !important;
+  border-radius: 8px !important;
+}
+[data-testid="stSelectbox"] > div > div[data-baseweb="select"] > div:hover {
+  border-color: var(--accent) !important;
+}
+[data-testid="stSelectbox"] span {
+  color: var(--ink) !important;
+  font-family: var(--f-ui) !important;
+  font-size: 13px !important;
+}
+
 /* ── Streamlit overrides ─────────────────────────────────────────────────────── */
 [data-testid="stHorizontalBlock"] { gap: 14px !important; }
 [data-testid="stToolbar"] { display: none !important; }
