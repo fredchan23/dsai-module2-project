@@ -14,6 +14,7 @@ my_dbt_dagster_project/*
 *.tar.gz
 .venv/
 venv/
+dashboard/.env
 __pycache__/
 *.pyc
 *.gitkeep
