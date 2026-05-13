@@ -1,3 +1,4 @@
+import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -25,8 +26,41 @@ def _kpi_card(icon: str, label: str, pre: str, value: str, unit: str, delta: str
     </div>"""
 
 
+def _filter_by_date_range(df: pd.DataFrame, start, end) -> pd.DataFrame:
+    col = df["month_start_date"].astype(str)
+    return df[(col >= str(start)) & (col <= str(end))]
+
+
+def _fmt_month(d: str) -> str:
+    try:
+        return pd.Timestamp(d).strftime("%b %Y")
+    except Exception:
+        return str(d)
+
+
 def render():
     df = db.load_monthly_sales()
+
+    # ── Date range filter ────────────────────────────────────────────────────────
+    months = sorted(df["month_start_date"].astype(str).unique())
+
+    fc1, fc2, _spacer = st.columns([1, 1, 3])
+    with fc1:
+        start_month = st.selectbox(
+            "From", months, index=0,
+            format_func=_fmt_month, key="ov_start_month",
+        )
+    with fc2:
+        end_month = st.selectbox(
+            "To", months, index=max(len(months) - 1, 0),
+            format_func=_fmt_month, key="ov_end_month",
+        )
+
+    if str(start_month) > str(end_month):
+        st.warning("Start month must be on or before end month — showing full dataset.")
+        start_month, end_month = months[0], months[-1]
+
+    df = _filter_by_date_range(df, start_month, end_month)
 
     total_revenue = df["revenue_incl_freight"].sum()
     total_orders  = int(df["order_count"].sum())
@@ -34,7 +68,12 @@ def render():
     aov = total_revenue / total_orders if total_orders else 0
 
     # ── Page header ──────────────────────────────────────────────────────────────
-    st.html("""
+    range_label = (
+        _fmt_month(str(start_month))
+        if start_month == end_month
+        else f"{_fmt_month(str(start_month))} – {_fmt_month(str(end_month))}"
+    )
+    st.html(f"""
     <div class="obi-page-head">
       <div>
         <div class="obi-eyebrow">Section 01 · Executive</div>
@@ -42,8 +81,8 @@ def render():
         <p class="sub">A platform-wide pulse covering revenue, demand, and customer base across 27 Brazilian states.</p>
       </div>
       <div class="obi-meta">
-        <span class="obi-pill">📅 Sep 2018</span>
-        <span class="obi-pill">All marketplaces</span>
+        <span class="obi-pill">📅 {range_label}</span>
+        <span class="obi-pill" style="opacity:.45;cursor:not-allowed" title="No marketplace dimension in source data">Single market</span>
       </div>
     </div>
     """)

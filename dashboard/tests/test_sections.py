@@ -1,4 +1,9 @@
 """Tests for Tasks 3–6: section render functions using mocked data."""
+# ---------------------------------------------------------------------------
+# Date-filter tests for Overview (Task 3 extension)
+# ---------------------------------------------------------------------------
+# These tests are written BEFORE implementation (RED phase).
+# They define the contract for the date-range filter added to render().
 import os
 import sys
 import unittest.mock as mock
@@ -265,3 +270,109 @@ def test_sellers_renders_kpi_row(seller_df, delivery_df, mock_streamlit):
         import sections.sellers as s
         s.render()
     assert _metric_called_anywhere(st), "Sellers section must render KPI metrics"
+
+
+# ---------------------------------------------------------------------------
+# Date filter — pure helper
+# ---------------------------------------------------------------------------
+
+def test_filter_by_date_range_returns_full_set(monthly_sales_df):
+    """When start==min and end==max, all rows are returned."""
+    import importlib, sys
+    for key in list(sys.modules.keys()):
+        if "sections.overview" in key:
+            del sys.modules[key]
+    import sections.overview as ov
+    result = ov._filter_by_date_range(monthly_sales_df, "2022-01-01", "2022-02-01")
+    assert len(result) == 2
+
+
+def test_filter_by_date_range_returns_single_month(monthly_sales_df):
+    """Filtering to one month returns exactly that month's row."""
+    import sys
+    for key in list(sys.modules.keys()):
+        if "sections.overview" in key:
+            del sys.modules[key]
+    import sections.overview as ov
+    result = ov._filter_by_date_range(monthly_sales_df, "2022-01-01", "2022-01-01")
+    assert len(result) == 1
+    assert result.iloc[0]["month_name"] == "January"
+
+
+def test_filter_by_date_range_empty_when_out_of_range(monthly_sales_df):
+    """A range that contains no data returns an empty DataFrame."""
+    import sys
+    for key in list(sys.modules.keys()):
+        if "sections.overview" in key:
+            del sys.modules[key]
+    import sections.overview as ov
+    result = ov._filter_by_date_range(monthly_sales_df, "2025-01-01", "2025-12-01")
+    assert len(result) == 0
+
+
+# ---------------------------------------------------------------------------
+# Date filter — render() integration
+# ---------------------------------------------------------------------------
+
+def _reload_overview():
+    import sys
+    for key in list(sys.modules.keys()):
+        if "sections.overview" in key:
+            del sys.modules[key]
+    import sections.overview as ov
+    return ov
+
+
+def _make_empty_dfs():
+    """Stubs for db calls that overview.render() makes beyond monthly_sales."""
+    return {
+        "db.load_top_products":        pd.DataFrame(columns=["product_category_name_english", "revenue_incl_freight"]),
+        "db.load_seller_performance":  pd.DataFrame(columns=["average_review_score"]),
+        "db.load_delivery_performance": pd.DataFrame(columns=["on_time_delivery_rate"]),
+        "db.load_rfm_scored":          pd.DataFrame(columns=["customer_unique_id"]),
+    }
+
+
+def test_overview_renders_two_date_selectboxes(monthly_sales_df, mock_streamlit):
+    """render() must call st.selectbox at least twice for start/end month pickers."""
+    import streamlit as st
+    st.selectbox.side_effect = ["2022-01-01", "2022-02-01"]
+    ov = _reload_overview()
+    patches = {k: mock.patch(k, return_value=v) for k, v in _make_empty_dfs().items()}
+    with mock.patch("db.load_monthly_sales", return_value=monthly_sales_df):
+        with patches["db.load_top_products"], patches["db.load_seller_performance"], \
+             patches["db.load_delivery_performance"], patches["db.load_rfm_scored"]:
+            ov.render()
+    assert st.selectbox.call_count >= 2, "render() must call st.selectbox for start and end month"
+
+
+def test_overview_date_filter_defaults_to_full_dataset(monthly_sales_df, mock_streamlit):
+    """First selectbox default index=0 (min), second default index=last (max)."""
+    import streamlit as st
+    st.selectbox.side_effect = ["2022-01-01", "2022-02-01"]
+    ov = _reload_overview()
+    patches = {k: mock.patch(k, return_value=v) for k, v in _make_empty_dfs().items()}
+    with mock.patch("db.load_monthly_sales", return_value=monthly_sales_df):
+        with patches["db.load_top_products"], patches["db.load_seller_performance"], \
+             patches["db.load_delivery_performance"], patches["db.load_rfm_scored"]:
+            ov.render()
+    calls = st.selectbox.call_args_list
+    assert len(calls) >= 2
+    _, kw0 = calls[0]
+    _, kw1 = calls[1]
+    assert kw0.get("index") == 0, "Start month must default to index 0 (earliest)"
+    assert kw1.get("index") == len(monthly_sales_df) - 1, "End month must default to last index (latest)"
+
+
+def test_overview_date_filter_warns_on_invalid_range(monthly_sales_df, mock_streamlit):
+    """st.warning must be called when start > end."""
+    import streamlit as st
+    # Return end < start to trigger the guard
+    st.selectbox.side_effect = ["2022-02-01", "2022-01-01"]
+    ov = _reload_overview()
+    patches = {k: mock.patch(k, return_value=v) for k, v in _make_empty_dfs().items()}
+    with mock.patch("db.load_monthly_sales", return_value=monthly_sales_df):
+        with patches["db.load_top_products"], patches["db.load_seller_performance"], \
+             patches["db.load_delivery_performance"], patches["db.load_rfm_scored"]:
+            ov.render()
+    assert st.warning.called, "render() must call st.warning when start month > end month"
