@@ -38,9 +38,8 @@ def render():
     # Seller performance table (top 50 by revenue)
     st.subheader("Top 50 Sellers by Revenue")
     table_df = sellers.head(50).copy()
-    table_df["seller_id_short"] = table_df["seller_id"].str[:12] + "..."
     display_cols = {
-        "seller_id_short": "Seller ID",
+        "seller_id": "Seller ID",
         "seller_state": "State",
         "order_count": "Orders",
         "revenue_incl_freight": f"Revenue ({_BRL})",
