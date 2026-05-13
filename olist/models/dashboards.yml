@@ -1,10 +1,10 @@
 exposures:
   - name: executive_dashboard
-    label: Executive Dashboard (Preset)
+    label: Executive Dashboard
     type: dashboard
     maturity: low
-    url: https://embedded-example-521506040142.asia-southeast1.run.app
-    description: Preset embedded dashboard for Olist sales.
+    url: https://fredchan23-dsai-module2-project-dashboardapp-k1ee0s.streamlit.app/
+    description: Streamlit dashboard for Olist sales.
 
     depends_on:
       - ref('mart_monthly_sales')
