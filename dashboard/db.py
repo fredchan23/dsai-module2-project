@@ -63,7 +63,15 @@ def _query(sql: str) -> pd.DataFrame:
         cur.execute(sql)
         rows = cur.fetchall()
         cols = [d.name.lower() for d in cur.description] if cur.description else []
-    return pd.DataFrame(rows, columns=cols)
+    df = pd.DataFrame(rows, columns=cols)
+    # Snowflake returns Decimal as object dtype — coerce to float where possible
+    for col in df.columns:
+        if df[col].dtype == object:
+            try:
+                df[col] = pd.to_numeric(df[col])
+            except (ValueError, TypeError):
+                pass
+    return df
 
 
 @st.cache_data(ttl=3600)
